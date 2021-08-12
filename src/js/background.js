@@ -6,9 +6,9 @@ import { fetchChapterPage$ as fetchChapterPage$Dm5 } from './container/App/reduc
 import { fetchChapterPage$ as fetchChapterPage$Sf } from './container/App/reducers/sfEpic';
 import { fetchChapterPage$ as fetchChapterPage$comicbus } from './container/App/reducers/comicBusEpic';
 
-const dm5Regex = /http\:\/\/(tel||www)\.dm5\.com\/(m\d+)\//;
-const sfRegex = /http\:\/\/comic\.sfacg\.com\/(HTML\/[^\/]+\/.+)$/;
-const comicbusRegex = /http\:\/\/(www|v)\.comicbus.com\/online\/(comic-\d+\.html\?ch=.*$)/;
+const dm5Regex = /http(?:s)?\:\/\/(tel||www)\.dm5\.com\/(m\d+)\//g;
+const sfRegex = /http(?:s)?\:\/\/comic\.sfacg\.com\/(HTML\/[^\/]+\/.+)$/;
+const comicbusRegex = /http(?:s)?\:\/\/(?:www|v)\.comicbus.com\/online\/(comic-\d+\.html\?ch=.*$)/;
 
 declare var chrome: any;
 declare var ga: any;
@@ -61,13 +61,20 @@ chrome.browserAction.setBadgeBackgroundColor({ color: '#F00' });
 
 chrome.webRequest.onBeforeSendHeaders.addListener(
   dm5RefererHandler,
-  { urls: ['http://www.dm5.com/m*/chapterfun*', 'http://*.cdndm5.com/*'] },
+  {
+    urls: [
+      'http://www.dm5.com/m*/chapterfun*',
+      'http://*.cdndm5.com/*',
+      'https://www.dm5.com/m*/chapterfun*',
+      'https://*.cdndm5.com/*',
+    ],
+  },
   ['requestHeaders', 'blocking', 'extraHeaders'],
 );
 
 chrome.webRequest.onBeforeSendHeaders.addListener(
   dm5CookieHandler,
-  { urls: ['http://www.dm5.com/m*/'] },
+  { urls: ['http://www.dm5.com/m*/', 'https://www.dm5.com/m*/'] },
   ['requestHeaders', 'blocking', 'extraHeaders'],
 );
 
@@ -182,19 +189,15 @@ chrome.webNavigation.onBeforeNavigate.addListener(
       console.log('sf fired');
       const chapter = sfRegex.exec(details.url)[1];
       chrome.tabs.update(details.tabId, {
-        url: `${chrome.extension.getURL(
-          'app.html',
-        )}?site=sf&chapter=${chapter}`,
+        url: `${chrome.extension.getURL('app.html')}?site=sf&chapter=${chapter}`,
       });
       ga('send', 'event', 'sf view');
     } else if (dm5Regex.test(details.url)) {
-      console.log('dm5 fired');
+      console.log('dm5 fired', dm5Regex.exec(details.url));
       let chapter = '';
       chapter = dm5Regex.exec(details.url)[2];
       chrome.tabs.update(details.tabId, {
-        url: `${chrome.extension.getURL(
-          'app.html',
-        )}?site=dm5&chapter=${chapter}`,
+        url: `${chrome.extension.getURL('app.html')}?site=dm5&chapter=${chapter}`,
       });
       ga('send', 'event', 'dm5 view');
     }
@@ -203,7 +206,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(
     url: [
       { urlMatches: 'comicbus.com/online/.*$' },
       { urlMatches: 'comic.sfacg.com/HTML/[^/]+/.+$' },
-      { urlMatches: 'http://(tel||www).dm5.com/md*' },
+      { urlMatches: 'http(?:s)?://(tel||www).dm5.com/md*' },
     ],
   },
 );

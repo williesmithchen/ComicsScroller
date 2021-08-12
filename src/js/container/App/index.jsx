@@ -163,10 +163,10 @@ class App extends Component {
               <MenuIcon className={cn.icon} />
             </IconButton>
             <span>Comics Scroller</span>
-            <a target="_blank" href={this.props.chapterURL}>{`${
-              this.props.title
-            }`}</a>
-            <span>></span>
+            <a
+              target="_blank"
+              href={this.props.chapterURL}>{`${this.props.title}`}</a>
+            <span>{'>'}</span>
             <span>
               {this.props.chapterList.length > 0
                 ? this.props.chapterTitle
@@ -185,20 +185,17 @@ class App extends Component {
               </a>
             </IconButton>
             <IconButton
-              onClickHandler={prevable ? this.prevChapterHandler : undefined}
-            >
+              onClickHandler={prevable ? this.prevChapterHandler : undefined}>
               <PrevIcon className={prevable ? cn.icon : cn.icon_deactive} />
             </IconButton>
             <IconButton
-              onClickHandler={nextable ? this.nextChapterHandler : undefined}
-            >
+              onClickHandler={nextable ? this.nextChapterHandler : undefined}>
               <NextIcon className={nextable ? cn.icon : cn.icon_deactive} />
             </IconButton>
             <IconButton
               onClickHandler={
                 chapterTitle !== '' ? this.subscribeHandler : undefined
-              }
-            >
+              }>
               <TagIcon className={getTagIconClass(chapterTitle, subscribe)} />
             </IconButton>
           </span>

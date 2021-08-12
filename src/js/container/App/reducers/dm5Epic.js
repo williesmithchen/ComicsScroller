@@ -139,7 +139,7 @@ export function fetchChapterPage$(url) {
 }
 
 export function fetchImgListEpic(action$, store) {
-  console.log('fetchImgs$')
+  console.log('fetchImgs$');
   return action$.ofType(FETCH_IMG_LIST).mergeMap(action => {
     const { chapterList } = store.getState().comics;
     return fetchImgs$(chapterList[action.index]).mergeMap(({ imgList }) => {
@@ -176,7 +176,7 @@ export function fetchChapterEpic(action$, store) {
               chapterList,
               item => item === chapter,
             );
-            console.log(chapterIndex)
+            console.log(chapterIndex);
             chrome.storage.local.get(null, item => {
               const newItem = {
                 ...item,
@@ -220,12 +220,12 @@ export function fetchChapterEpic(action$, store) {
                 item.subscribe,
                 citem => citem.site === 'dm5' && citem.comicsID === comicsID,
               );
-              store.dispatch(updateSubscribe(subscribe))
+              store.dispatch(updateSubscribe(subscribe));
               chrome.storage.local.set(newItem, () => {
                 chrome.browserAction.setBadgeText({
                   text: `${
                     newItem.update.length === 0 ? '' : newItem.update.length
-                    }`,
+                  }`,
                 });
                 store.dispatch(updateTitle(title));
                 store.dispatch(updateReadedChapters(
@@ -240,9 +240,9 @@ export function fetchChapterEpic(action$, store) {
                 } else {
                   store.dispatch(updateChapterLatestIndex(chapterIndex - 1));
                 }
-              })
-            })
-            return []
+              });
+            });
+            return [];
           },
         ),
       );
@@ -281,11 +281,11 @@ export function updateReadedEpic(action$, store) {
         chrome.browserAction.setBadgeText({
           text: `${newItem.update.length === 0 ? '' : newItem.update.length}`,
         });
-        store.dispatch(updateReadedChapters(newItem.dm5[comicsID].readedChapters))
-        store.dispatch(updateChapterNowIndex(action.index))
+        store.dispatch(updateReadedChapters(newItem.dm5[comicsID].readedChapters));
+        store.dispatch(updateChapterNowIndex(action.index));
       });
-    })
-    return []
+    });
+    return [];
   });
 }
 
